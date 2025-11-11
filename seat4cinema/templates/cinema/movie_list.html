@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Все фильмы - Кинотеатр{% endblock %}
+
+{% block content %}
+<h1>Все фильмы</h1>
+
+<div class="row">
+    
+    {% if is_search %}
+    <h2>Результаты поиска по «{{ q }}» — найдено {{ total }}</h2>
+{% else %}
+    <h2>Все фильмы</h2>
+{% endif %}
+
+<div class="row">
+    {% for movie in movies %}
+        ...
+    {% endfor %}
+</div>
+
+
+    {% for movie in movies %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}" style="height: 400px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                <span class="text-white">Нет изображения</span>
+            </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text">
+                    <strong>Жанр:</strong> {{ movie.genre }}<br>
+                    <strong>Режиссер:</strong> {{ movie.director }}<br>
+                    <strong>Длительность:</strong> {{ movie.duration }} мин.<br>
+                    <strong>Цена:</strong> {{ movie.price }} руб.
+                </p>
+                <p class="card-text">{{ movie.description|truncatewords:30 }}</p>
+            </div>
+            
+            <div class="card-footer">
+                <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">Подробнее и бронирование</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            Фильмы скоро появятся!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

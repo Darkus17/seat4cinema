@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">❌ Отмена бронирования</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Вы уверены что хотите отменить бронирование?</h5>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Детали брони:</strong><br>
+                        🎬 Фильм: {{ ticket.showtime.movie.title }}<br>
+                        ⏰ Время: {{ ticket.showtime.start_time|date:"d.m.Y H:i" }}<br>
+                        🎭 Зал: {{ ticket.showtime.hall.name }}<br>
+                        🎫 Количество билетов: {{ ticket.quantity }}<br>
+                        💰 Сумма: {{ ticket.total_price }} руб.
+                    </div>
+
+                    {% if can_cancel %}
+                        <div class="alert alert-info">
+                            <strong>⚠️ Внимание:</strong> После отмены {{ ticket.quantity }} мест вернутся в продажу.
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-danger flex-fill">
+                                    ✅ Да, отменить бронь
+                                </button>
+                                <a href="{% url 'my_tickets' %}" class="btn btn-secondary flex-fill">
+                                    ❌ Нет, вернуться назад
+                                </a>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <strong>❌ Нельзя отменить:</strong> До сеанса осталось менее 1 часа.
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'my_tickets' %}" class="btn btn-primary">
+                                ← Вернуться к моим билетам
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

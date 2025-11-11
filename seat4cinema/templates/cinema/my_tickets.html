@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>🎫 Мои бронирования</h2>
+    
+    {% if tickets %}
+        <div class="row">
+            {% for ticket in tickets %}
+            <div class="col-md-6 mb-4">
+                <div class="card {% if ticket.status == 'cancelled' %}border-danger{% elif ticket.status == 'confirmed' %}border-success{% else %}border-warning{% endif %}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ticket.showtime.movie.title }}</h5>
+                        
+                        <div class="mb-2">
+                            <span class="badge 
+                                {% if ticket.status == 'confirmed' %}bg-success
+                                {% elif ticket.status == 'cancelled' %}bg-danger
+                                {% else %}bg-warning text-dark{% endif %}">
+                                {{ ticket.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <p class="card-text">
+                            <strong>🎭 Зал:</strong> {{ ticket.showtime.hall.name }}<br>
+                            <strong>⏰ Дата и время:</strong> {{ ticket.showtime.start_time|date:"d.m.Y H:i" }}<br>
+                            <strong>🎫 Количество билетов:</strong> {{ ticket.quantity }}<br>
+                            <strong>💰 Общая стоимость:</strong> {{ ticket.total_price }} руб.<br>
+                            <strong>📅 Забронировано:</strong> {{ ticket.created_at|date:"d.m.Y H:i" }}
+                        </p>
+                        
+                        {% if ticket.status != 'cancelled' %}
+                            <div class="d-flex gap-2 flex-wrap">
+                                {# Простая проверка времени без сложных тегов #}
+                                {% if ticket.showtime.start_time > now_plus_1h %}
+                                    <a href="{% url 'cancel_booking' ticket.id %}" 
+                                       class="btn btn-outline-danger btn-sm">
+                                        ❌ Отменить бронь
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary btn-sm" disabled 
+                                            title="Нельзя отменить менее чем за 1 час до сеанса">
+                                        ❌ Нельзя отменить
+                                    </button>
+                                {% endif %}
+                                
+                                <a href="{% url 'movie_detail' ticket.showtime.movie.id %}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    ℹ️ О фильме
+                                </a>
+                            </div>
+                        {% else %}
+                            <small class="text-muted">Бронь отменена</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <h4>У вас нет бронирований</h4>
+            <p>Перейдите на <a href="{% url 'home' %}">главную страницу</a> чтобы выбрать фильм.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

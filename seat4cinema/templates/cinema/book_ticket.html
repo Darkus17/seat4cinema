@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование билетов - Кинотеатр{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Бронирование билетов</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>{{ showtime.movie.title }}</h3>
+                <p><strong>Дата и время:</strong> {{ showtime.start_time|date:"d.m.Y H:i" }}</p>
+                <p><strong>Зал:</strong> {{ showtime.hall.name }}</p>
+                <p><strong>Свободных мест:</strong> {{ showtime.available_seats }}</p>
+                <p><strong>Цена за билет:</strong> {{ showtime.movie.price }} руб.</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="{{ form.quantity.id_for_label }}" class="form-label">Количество билетов:</label>
+                {{ form.quantity }}
+                {% if form.quantity.errors %}
+                <div class="text-danger">
+                    {% for error in form.quantity.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Итоговая сумма:</strong> <span id="total-price">0</span> руб.
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-lg">Забронировать</button>
+            <a href="{% url 'movie_detail' showtime.movie.id %}" class="btn btn-secondary">Назад</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('{{ form.quantity.id_for_label }}');
+        const pricePerTicket = {{ showtime.movie.price }};
+        const totalPriceElement = document.getElementById('total-price');
+        
+        function updateTotalPrice() {
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = quantity * pricePerTicket;
+            totalPriceElement.textContent = total.toFixed(2);
+        }
+        
+        quantityInput.addEventListener('input', updateTotalPrice);
+        updateTotalPrice();
+    });
+</script>
+{% endblock %}
