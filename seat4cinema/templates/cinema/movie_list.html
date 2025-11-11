@@ -10,12 +10,12 @@
     {% if is_search %}
     <h2>Результаты поиска по «{{ q }}» — найдено {{ total }}</h2>
 {% else %}
-    <h2>Все фильмы</h2>
+    
 {% endif %}
 
 <div class="row">
     {% for movie in movies %}
-        ...
+        
     {% endfor %}
 </div>
 
@@ -55,4 +55,5 @@
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}
